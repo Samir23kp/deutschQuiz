@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار المفردات العربية - الألمانية</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --success-color: #27ae60;
+            --danger-color: #e74c3c;
+            --text-color: #34495e;
+        }
+
+        * {
+            box-sizing: border-box;
+            font-family: 'Tajawal', 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: #f8f9fa;
+            margin: 0;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        .container {
+            background: white;
+            max-width: 700px;
+            margin: 20px auto;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.08);
+        }
+
+        h1 {
+            color: var(--primary-color);
+            text-align: center;
+            margin: 0 0 30px;
+            font-size: 1.8em;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 15px;
+        }
+
+        .flags {
+            display: flex;
+            gap: 10px;
+        }
+
+        .flag {
+            width: 40px;
+            height: 25px;
+            border-radius: 3px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        #timer {
+            position: absolute;
+            top: 15px;
+            left: 15px;
+            font-size: 1.5em;
+            color: var(--danger-color);
+            font-weight: bold;
+        }
+
+        .question-container {
+            margin: 25px 0;
+        }
+
+        #question {
+            font-size: 1.4em;
+            color: var(--text-color);
+            margin-bottom: 30px;
+            line-height: 1.5;
+            font-weight: 600;
+        }
+
+        .answers-grid {
+            display: grid;
+            gap: 12px;
+        }
+
+        .answer-btn {
+            background: white;
+            color: var(--text-color);
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            padding: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            text-align: right;
+        }
+
+        .answer-btn.correct {
+            background: var(--success-color);
+            color: white;
+            border-color: var(--success-color);
+        }
+
+        .answer-btn.incorrect {
+            background: var(--danger-color);
+            color: white;
+            border-color: var(--danger-color);
+        }
+
+        #score {
+            text-align: center;
+            font-size: 1.2em;
+            margin: 25px 0;
+            color: var(--primary-color);
+        }
+
+        #final-message {
+            text-align: center;
+            padding: 20px;
+            font-size: 1.4em;
+            border-radius: 10px;
+            margin-top: 30px;
+        }
+
+        .success {
+            background: #e8f5e9;
+            color: var(--success-color);
+        }
+
+        .failure {
+            background: #ffebee;
+            color: var(--danger-color);
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 20px;
+            }
+            
+            h1 {
+                font-size: 1.5em;
+            }
+            
+            #question {
+                font-size: 1.2em;
+            }
+            
+            .answer-btn {
+                font-size: 1em;
+                padding: 12px;
+            }
+            
+            #timer {
+                position: static;
+                text-align: center;
+                margin-bottom: 20px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>
+            <div class="flags">
+                <img src="https://flagcdn.com/ma.svg" class="flag" alt="Moroccan Flag">
+                <img src="https://flagcdn.com/de.svg" class="flag" alt="German Flag">
+            </div>
+            اختبار المفردات
+        </h1>
+        <div id="timer">⏳ <span id="time-left">10</span></div>
+        
+        <div class="question-container">
+            <div id="question"></div>
+            <div class="answers-grid" id="answers"></div>
+        </div>
+        
+        <div id="score">النتيجة: <span id="score-value">0</span>/30</div>
+        <div id="final-message"></div>
+    </div>
+
+    <script>
+        const questions = [
+            { arabic: "يعمل ك/على", correctAnswer: "arbeiten als.an", wrongAnswers: ["buchstabieren", "ergänzen"] },
+            { arabic: "يتهجى", correctAnswer: "buchstabieren", wrongAnswers: ["ergänzen", "heißen"] },
+            { arabic: "يكمل", correctAnswer: "ergänzen", wrongAnswers: ["heißen", "können"] },
+            { arabic: "يسمى/يدعى", correctAnswer: "heißen", wrongAnswers: ["können", "küssen"] },
+            { arabic: "يستطيع", correctAnswer: "können", wrongAnswers: ["küssen", "lachen über"] },
+            { arabic: "يقبل", correctAnswer: "küssen", wrongAnswers: ["lachen über", "lieben"] },
+            { arabic: "يضحك على", correctAnswer: "lachen über", wrongAnswers: ["lieben", "markieren"] },
+            { arabic: "يحب", correctAnswer: "lieben", wrongAnswers: ["markieren", "notieren"] },
+            { arabic: "يحدد", correctAnswer: "markieren", wrongAnswers: ["notieren", "ordnen"] },
+            { arabic: "يدون", correctAnswer: "notieren", wrongAnswers: ["ordnen", "weinen"] },
+            { arabic: "يرتب", correctAnswer: "ordnen", wrongAnswers: ["weinen", "winken"] },
+            { arabic: "يبكي", correctAnswer: "weinen", wrongAnswers: ["winken", "wohnen"] },
+            { arabic: "يومئ", correctAnswer: "winken", wrongAnswers: ["wohnen", "ausfüllen"] },
+            { arabic: "يسكن", correctAnswer: "wohnen", wrongAnswers: ["ausfüllen", "hoffen auf"] },
+            { arabic: "يملأ", correctAnswer: "ausfüllen", wrongAnswers: ["hoffen auf", "sich interessieren für"] },
+            { arabic: "يأمل في", correctAnswer: "hoffen auf", wrongAnswers: ["sich interessieren für", "sich freuen auf"] },
+            { arabic: "يهتم بـ", correctAnswer: "sich interessieren für", wrongAnswers: ["sich freuen auf", "kochen"] },
+            { arabic: "يفرح بـ", correctAnswer: "sich freuen auf", wrongAnswers: ["kochen", "korrigieren"] },
+            { arabic: "يطبخ", correctAnswer: "kochen", wrongAnswers: ["korrigieren", "meinen"] },
+            { arabic: "يصحح", correctAnswer: "korrigieren", wrongAnswers: ["meinen", "platzen"] },
+            { arabic: "يعني", correctAnswer: "meinen", wrongAnswers: ["platzen", "rasieren"] },
+            { arabic: "ينفجر", correctAnswer: "platzen", wrongAnswers: ["rasieren", "rechnen"] },
+            { arabic: "يحلق", correctAnswer: "rasieren", wrongAnswers: ["rechnen", "reiten"] },
+            { arabic: "يحسب", correctAnswer: "rechnen", wrongAnswers: ["reiten", "schaffen"] },
+            { arabic: "يركب", correctAnswer: "reiten", wrongAnswers: ["schaffen", "schwimmen"] },
+            { arabic: "يخلق", correctAnswer: "schaffen", wrongAnswers: ["schwimmen", "segeln"] },
+            { arabic: "يسبح", correctAnswer: "schwimmen", wrongAnswers: ["segeln", "springen"] },
+            { arabic: "يبحر", correctAnswer: "segeln", wrongAnswers: ["springen", "studieren"] },
+            { arabic: "يقفز", correctAnswer: "springen", wrongAnswers: ["studieren", "arbeiten als.an"] },
+            { arabic: "يدرس", correctAnswer: "studieren", wrongAnswers: ["arbeiten als.an", "buchstabieren"] }
+        ];
+
+        const elements = {
+            question: document.getElementById('question'),
+            answers: document.getElementById('answers'),
+            timer: document.getElementById('time-left'),
+            score: document.getElementById('score-value'),
+            message: document.getElementById('final-message')
+        };
+
+        let currentQuestion = 0;
+        let score = 0;
+        let timeLeft = 10;
+        let timerId;
+
+        function shuffleAnswers(answers) {
+            return answers.sort(() => Math.random() - 0.5);
+        }
+
+        function showQuestion() {
+            clearInterval(timerId);
+            timeLeft = 10;
+            elements.timer.textContent = timeLeft;
+            elements.timer.style.color = 'var(--danger-color)';
+            
+            const question = questions[currentQuestion];
+            const allAnswers = shuffleAnswers([...question.wrongAnswers, question.correctAnswer]);
+            const correctIndex = allAnswers.indexOf(question.correctAnswer);
+
+            elements.question.textContent = question.arabic;
+            elements.answers.innerHTML = allAnswers
+                .map((answer, index) => `
+                    <button class="answer-btn" 
+                            onclick="handleAnswer(${index})"
+                            data-correct="${index === correctIndex}">
+                        ${answer}
+                    </button>
+                `).join('');
+            
+            startTimer();
+        }
+
+        function handleAnswer(selectedIndex) {
+            clearInterval(timerId);
+            const buttons = elements.answers.children;
+            const correctIndex = Array.from(buttons).findIndex(btn => btn.dataset.correct === "true");
+
+            Array.from(buttons).forEach(btn => {
+                btn.disabled = true;
+                if(btn === buttons[selectedIndex]) {
+                    btn.classList.add(selectedIndex === correctIndex ? 'correct' : 'incorrect');
+                }
+                if(btn.dataset.correct === "true") btn.classList.add('correct');
+            });
+
+            if(selectedIndex === correctIndex) {
+                score++;
+                elements.score.textContent = score;
+            }
+
+            setTimeout(() => {
+                currentQuestion++;
+                if(currentQuestion < questions.length) {
+                    showQuestion();
+                } else {
+                    endQuiz();
+                }
+            }, 500);
+        }
+
+        function startTimer() {
+            timerId = setInterval(() => {
+                timeLeft--;
+                elements.timer.textContent = timeLeft;
+                
+                if(timeLeft <= 0) {
+                    clearInterval(timerId);
+                    handleAnswer(-1);
+                }
+            }, 1000);
+        }
+
+        function endQuiz() {
+            elements.question.textContent = "انتهى الاختبار!";
+            elements.answers.innerHTML = "";
+            elements.timer.style.display = 'none';
+            
+            if(score >= 15) {
+                elements.message.textContent = `مبروك! فزت بنتيجة ${score}/30 🎉`;
+                elements.message.className = "success";
+            } else {
+                elements.message.textContent = `للأسف! حصلت على ${score}/30 - لا يمكن إعادة المحاولة`;
+                elements.message.className = "failure";
+            }
+        }
+
+        showQuestion();
+    </script>
+</body>
+</html>
